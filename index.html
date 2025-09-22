@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selection Sort Visualizer - Trực quan hóa thuật toán sắp xếp chọn</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" href="https://lequanganh.id.vn/favicon.ico">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header-nav">
+        <div class="header-container">
+            <div class="header-left">
+                <img src="https://lequanganh.id.vn/favicon.ico" alt="Logo" class="header-logo">
+                <span class="header-title">Lê Quang Anh's Note</span>
+            </div>
+            <nav class="header-right">
+                <a href="https://lequanganh.id.vn/" class="nav-link" title="Trang chủ">
+                    <i class="fas fa-home"></i>
+                </a>
+                <a href="https://github.com/QuangAnh253/selection-sort" target="_blank" class="nav-link" title="GitHub Repository">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://lequanganh.id.vn/blog/selection-sort" target="_blank" class="nav-link" title="Blog Post">
+                    <i class="fas fa-blog"></i>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-wrapper">
+        <div class="container">
+            <div class="page-header">
+                <h1>🔢 Selection Sort Visualizer</h1>
+                <p>Trực quan hóa thuật toán sắp xếp chọn (Selection Sort)</p>
+            </div>
+
+            <div class="main-content">
+                <!-- Panel hiển thị code -->
+                <div class="code-panel">
+                    <h3>📝 Mã nguồn Selection Sort</h3>
+                    <div class="code-container">
+                        <div class="code-line" data-line="0">function selectionSort(arr) {</div>
+                        <div class="code-line" data-line="1">&nbsp;&nbsp;<span class="code-comment">// Duyệt qua từng vị trí trong mảng</span></div>
+                        <div class="code-line" data-line="2">&nbsp;&nbsp;for (let i = 0; i < arr.length - 1; i++) {</div>
+                        <div class="code-line" data-line="3">&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// Giả sử phần tử tại vị trí i là nhỏ nhất</span></div>
+                        <div class="code-line" data-line="4">&nbsp;&nbsp;&nbsp;&nbsp;let minIndex = i;</div>
+                        <div class="code-line" data-line="5">&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// Tìm phần tử nhỏ nhất trong phần chưa sắp xếp</span></div>
+                        <div class="code-line" data-line="6">&nbsp;&nbsp;&nbsp;&nbsp;for (let j = i + 1; j < arr.length; j++) {</div>
+                        <div class="code-line" data-line="7">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// So sánh với phần tử nhỏ nhất hiện tại</span></div>
+                        <div class="code-line" data-line="8">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (arr[j] < arr[minIndex]) {</div>
+                        <div class="code-line" data-line="9">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;minIndex = j;</div>
+                        <div class="code-line" data-line="10">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-line" data-line="11">&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-line" data-line="12">&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// Hoán đổi phần tử nhỏ nhất với phần tử đầu tiên</span></div>
+                        <div class="code-line" data-line="13">&nbsp;&nbsp;&nbsp;&nbsp;if (minIndex !== i) {</div>
+                        <div class="code-line" data-line="14">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;let temp = arr[i];</div>
+                        <div class="code-line" data-line="15">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arr[i] = arr[minIndex];</div>
+                        <div class="code-line" data-line="16">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;arr[minIndex] = temp;</div>
+                        <div class="code-line" data-line="17">&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+                        <div class="code-line" data-line="18">&nbsp;&nbsp;}</div>
+                        <div class="code-line" data-line="19">}</div>
+                    </div>
+                </div>
+
+                <!-- Panel hiển thị visualization -->
+                <div class="visualization-panel">
+                    <h3>📊 Trực quan hóa</h3>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-default"></div>
+                            <span>Chưa sắp xếp</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-comparing"></div>
+                            <span>Đang so sánh</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-minimum"></div>
+                            <span>Phần tử nhỏ nhất</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-sorted"></div>
+                            <span>Đã sắp xếp</span>
+                        </div>
+                    </div>
+                    <div class="array-container" id="arrayContainer">
+                        <!-- Các bar sẽ được tạo bằng JavaScript -->
+                    </div>
+                    <div class="controls">
+                        <button class="btn btn-run" id="runBtn">▶️ Chạy thuật toán</button>
+                        <button class="btn btn-reset" id="resetBtn">🔄 Tạo mảng mới</button>
+                    </div>
+                    <div class="status" id="status">Sẵn sàng để bắt đầu! Nhấn "Chạy thuật toán" để xem demo.</div>
+                    
+                    <!-- Log History Panel -->
+                    <div class="log-panel">
+                        <div class="log-header">
+                            <h4>📜 Lịch sử thực thi</h4>
+                            <button class="btn-clear-log" id="clearLogBtn" title="Xóa log">🗑️</button>
+                        </div>
+                        <div class="log-container" id="logContainer">
+                            <div class="log-item welcome">
+                                <span class="log-number">💡</span>
+                                <span class="log-text">Chào mừng! Nhấn "Chạy thuật toán" để bắt đầu và theo dõi từng bước thực hiện.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-left">
+                <p>&copy; 2025 Lê Quang Anh</p>
+            </div>
+            <div class="footer-center">
+                <a href="https://lequanganh.id.vn/contact" class="work-together" target="_blank">
+                    Let's work together
+                </a>
+            </div>
+            <div class="footer-right">
+                <div class="social-links">
+                    <a href="https://github.com/QuangAnh253" target="_blank" class="social-link" title="GitHub">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/leequanh/" target="_blank" class="social-link" title="LinkedIn">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="https://www.instagram.com/lee.quanh_/" target="_blank" class="social-link" title="Instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="mailto:lequanganh253@gmail.com" class="social-link" title="Email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
