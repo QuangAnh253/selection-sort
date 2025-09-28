@@ -11,8 +11,8 @@ class SelectionSortVisualizer {
         this.steps = [];
         this.currentStep = 0;
         this.isRunning = false;
-        this.animationSpeed = 800; // milliseconds
-        this.logCounter = 0; // Đếm số bước để hiển thị số thứ tự
+        this.animationSpeed = 1500; // milliseconds - tăng thời gian để đọc log
+        this.logCounter = 0;
         
         this.initializeElements();
         this.generateRandomArray();
@@ -80,7 +80,7 @@ class SelectionSortVisualizer {
     }
 
     /**
-     * Tạo các bước chi tiết của thuật toán Selection Sort
+     * Tạo các bước chi tiết của thuật toán Selection Sort (theo cụm)
      */
     generateSteps() {
         this.steps = [];
@@ -92,36 +92,59 @@ class SelectionSortVisualizer {
             type: 'start',
             codeLine: 0,
             array: [...arr],
-            description: 'Bắt đầu thuật toán Selection Sort'
+            description: 'Bắt đầu thuật toán Selection Sort',
+            logGroup: {
+                icon: '🚀',
+                title: 'Khởi tạo',
+                content: [
+                    `Mảng ban đầu: [${arr.join(', ')}]`,
+                    `Bắt đầu sắp xếp ${n} phần tử`
+                ]
+            }
         });
 
         // Vòng lặp ngoài - duyệt qua từng vị trí
         for (let i = 0; i < n - 1; i++) {
-            // Bắt đầu vòng lặp ngoài
+            let minIndex = i;
+            const roundSteps = [];
+            
+            // Tạo log cho vòng lặp hiện tại
+            const beforeArray = [...arr];
+            const arrayDisplay = arr.map((val, idx) => 
+                idx === i ? `(${val})` : val.toString()
+            ).join(', ');
+            
+            // Bước bắt đầu vòng lặp
             this.steps.push({
-                type: 'outer_loop_start',
+                type: 'round_start',
                 codeLine: 2,
                 array: [...arr],
                 currentPos: i,
-                description: `Bắt đầu vòng lặp ngoài với i = ${i}`
+                description: `Vòng ${i + 1}/${n - 1}`,
+                logGroup: {
+                    icon: '🔄',
+                    title: `Vòng ${i + 1}/${n - 1}`,
+                    content: [
+                        `Mảng trước: [${arrayDisplay}]`,
+                        `i = ${i}, arr[i] = ${arr[i]}`
+                    ]
+                }
             });
 
-            // Khởi tạo minIndex - giả sử phần tử đầu tiên là nhỏ nhất
-            let minIndex = i;
+            // Khởi tạo minIndex
             this.steps.push({
                 type: 'init_min',
                 codeLine: 4,
                 array: [...arr],
                 currentPos: i,
                 minIndex: minIndex,
-                description: `Khởi tạo minIndex = ${i}, giả sử phần tử tại vị trí ${i} (giá trị ${arr[i]}) là nhỏ nhất`
+                description: `Giả sử phần tử tại vị trí ${i} là nhỏ nhất`
             });
 
-            // Vòng lặp trong - tìm phần tử nhỏ nhất trong phần chưa sắp xếp
+            // Tìm phần tử nhỏ nhất trong phần chưa sắp xếp
             for (let j = i + 1; j < n; j++) {
-                // Bắt đầu so sánh
                 this.steps.push({
-                    type: 'compare_start',
+                    type: 'compare',
                     codeLine: 6,
                     array: [...arr],
                     currentPos: i,
@@ -130,18 +153,6 @@ class SelectionSortVisualizer {
                     description: `So sánh arr[${j}] = ${arr[j]} với arr[${minIndex}] = ${arr[minIndex]}`
                 });
 
-                // Thực hiện so sánh
-                this.steps.push({
-                    type: 'compare',
-                    codeLine: 8,
-                    array: [...arr],
-                    currentPos: i,
-                    comparePos: j,
-                    minIndex: minIndex,
-                    description: `${arr[j]} ${arr[j] < arr[minIndex] ? '<' : '>='} ${arr[minIndex]}`
-                });
-
-                // Cập nhật minIndex nếu tìm thấy phần tử nhỏ hơn
                 if (arr[j] < arr[minIndex]) {
                     minIndex = j;
                     this.steps.push({
@@ -151,53 +162,45 @@ class SelectionSortVisualizer {
                         currentPos: i,
                         comparePos: j,
                         minIndex: minIndex,
-                        description: `Tìm thấy phần tử nhỏ hơn! Cập nhật minIndex = ${j} (giá trị ${arr[j]})`
+                        description: `Tìm thấy phần tử nhỏ hơn! Cập nhật minIndex = ${j}`
                     });
                 }
             }
 
             // Kiểm tra và thực hiện hoán đổi
+            let swapInfo = '';
             if (minIndex !== i) {
-                this.steps.push({
-                    type: 'swap_check',
-                    codeLine: 13,
-                    array: [...arr],
-                    currentPos: i,
-                    minIndex: minIndex,
-                    description: `Cần hoán đổi: arr[${i}] = ${arr[i]} với arr[${minIndex}] = ${arr[minIndex]}`
-                });
-
+                swapInfo = `Swap: arr[${i}] ↔ arr[${minIndex}]  (${arr[i]} ↔ ${arr[minIndex]})`;
+                
                 // Thực hiện hoán đổi
                 let temp = arr[i];
                 arr[i] = arr[minIndex];
                 arr[minIndex] = temp;
-
-                this.steps.push({
-                    type: 'swap',
-                    codeLine: 15,
-                    array: [...arr],
-                    currentPos: i,
-                    minIndex: minIndex,
-                    description: `Đã hoán đổi: Vị trí ${i} có giá trị ${arr[i]}, vị trí ${minIndex} có giá trị ${arr[minIndex]}`
-                });
             } else {
-                this.steps.push({
-                    type: 'no_swap',
-                    codeLine: 13,
-                    array: [...arr],
-                    currentPos: i,
-                    minIndex: minIndex,
-                    description: `Không cần hoán đổi: Phần tử tại vị trí ${i} đã là nhỏ nhất`
-                });
+                swapInfo = `Không cần swap: arr[${i}] = ${arr[i]} đã là nhỏ nhất`;
             }
 
-            // Đánh dấu phần tử đã được sắp xếp
+            const afterArray = [...arr];
+            const afterArrayDisplay = afterArray.join(', ');
+
+            // Bước kết thúc vòng lặp với thông tin tổng hợp
             this.steps.push({
-                type: 'sorted',
+                type: 'round_complete',
                 codeLine: 18,
                 array: [...arr],
+                currentPos: i,
                 sortedIndex: i,
-                description: `Phần tử tại vị trí ${i} (giá trị ${arr[i]}) đã được sắp xếp đúng vị trí`
+                description: `Hoàn thành vòng ${i + 1}`,
+                logGroup: {
+                    icon: '✅',
+                    title: '',
+                    content: [
+                        `Tìm min từ i=${i} → minIndex = ${minIndex}, arr[minIndex] = ${arr[i]}`,
+                        swapInfo,
+                        `Mảng sau : [${afterArrayDisplay}]`,
+                        '─'.repeat(50)
+                    ]
+                }
             });
         }
 
@@ -206,7 +209,16 @@ class SelectionSortVisualizer {
             type: 'complete',
             codeLine: 19,
             array: [...arr],
-            description: 'Hoàn thành sắp xếp! Mảng đã được sắp xếp theo thứ tự tăng dần.'
+            description: 'Hoàn thành sắp xếp!',
+            logGroup: {
+                icon: '🎉',
+                title: 'Kết thúc',
+                content: [
+                    'Thuật toán Selection Sort hoàn thành!',
+                    `Mảng đã sắp xếp: [${arr.join(', ')}]`,
+                    `Độ phức tạp: O(n²) với ${this.array.length} phần tử`
+                ]
+            }
         });
     }
 
@@ -228,17 +240,11 @@ class SelectionSortVisualizer {
         this.generateSteps();
         this.currentStep = 0;
         
-        // Thêm log bắt đầu
-        this.addLogEntry('🚀', 'Bắt đầu thuật toán Selection Sort', 'start');
-        
         // Thực thi từng bước
         for (let step of this.steps) {
             await this.executeStep(step);
             await this.sleep(this.animationSpeed);
         }
-        
-        // Thêm log hoàn thành
-        this.addLogEntry('✅', 'Hoàn thành sắp xếp! Mảng đã được sắp xếp theo thứ tự tăng dần.', 'complete');
         
         // Kết thúc visualization
         this.isRunning = false;
@@ -258,8 +264,10 @@ class SelectionSortVisualizer {
         // Cập nhật trạng thái mô tả
         this.updateStatus(step.description);
         
-        // Thêm log entry cho bước hiện tại
-        this.addLogEntry(this.getStepIcon(step.type), step.description, step.type);
+        // Thêm log entry nếu có logGroup
+        if (step.logGroup) {
+            this.addLogGroup(step.logGroup);
+        }
         
         // Cập nhật visualization dựa trên loại bước
         this.updateVisualization(step);
@@ -302,7 +310,6 @@ class SelectionSortVisualizer {
         // Áp dụng trạng thái dựa trên loại bước
         switch (step.type) {
             case 'compare':
-            case 'compare_start':
                 // Highlight phần tử đang so sánh
                 if (step.comparePos !== undefined) {
                     bars[step.comparePos].classList.add('comparing');
@@ -321,18 +328,7 @@ class SelectionSortVisualizer {
                 }
                 break;
                 
-            case 'swap_check':
-            case 'swap':
-                // Highlight cả hai phần tử sẽ hoán đổi
-                if (step.currentPos !== undefined) {
-                    bars[step.currentPos].classList.add('comparing');
-                }
-                if (step.minIndex !== undefined) {
-                    bars[step.minIndex].classList.add('comparing');
-                }
-                break;
-                
-            case 'sorted':
+            case 'round_complete':
                 // Đánh dấu phần tử đã sắp xếp
                 if (step.sortedIndex !== undefined) {
                     bars[step.sortedIndex].classList.add('sorted');
@@ -404,36 +400,54 @@ class SelectionSortVisualizer {
     }
 
     /**
-     * Thêm log entry mới vào log container
-     * @param {string} icon - Icon cho log entry
-     * @param {string} text - Nội dung log
-     * @param {string} type - Loại log để styling
+     * Thêm log group mới vào log container
+     * @param {Object} logGroup - Object chứa thông tin log group
      */
-    addLogEntry(icon, text, type = '') {
+    addLogGroup(logGroup) {
         // Bỏ highlight log trước
         const currentLogs = this.logContainer.querySelectorAll('.log-item.current');
         currentLogs.forEach(log => log.classList.remove('current'));
         
-        // Tạo log entry mới
-        const logItem = document.createElement('div');
-        logItem.className = `log-item current ${type}`;
+        // Tạo log group mới
+        const logGroupElement = document.createElement('div');
+        logGroupElement.className = 'log-group current';
         
-        const logNumber = document.createElement('span');
-        logNumber.className = 'log-number';
-        logNumber.textContent = icon;
+        // Tạo header cho group (nếu có title)
+        if (logGroup.title) {
+            const groupHeader = document.createElement('div');
+            groupHeader.className = 'log-group-header';
+            
+            const headerIcon = document.createElement('span');
+            headerIcon.className = 'log-number';
+            headerIcon.textContent = logGroup.icon;
+            
+            const headerTitle = document.createElement('span');
+            headerTitle.className = 'log-group-title';
+            headerTitle.textContent = logGroup.title;
+            
+            groupHeader.appendChild(headerIcon);
+            groupHeader.appendChild(headerTitle);
+            logGroupElement.appendChild(groupHeader);
+        }
         
-        const logText = document.createElement('span');
-        logText.className = 'log-text';
-        logText.textContent = text;
+        // Thêm nội dung
+        const groupContent = document.createElement('div');
+        groupContent.className = 'log-group-content';
         
-        logItem.appendChild(logNumber);
-        logItem.appendChild(logText);
+        logGroup.content.forEach(line => {
+            const contentLine = document.createElement('div');
+            contentLine.className = 'log-content-line';
+            contentLine.textContent = line;
+            groupContent.appendChild(contentLine);
+        });
+        
+        logGroupElement.appendChild(groupContent);
         
         // Thêm vào container
-        this.logContainer.appendChild(logItem);
+        this.logContainer.appendChild(logGroupElement);
         
         // Auto scroll xuống log mới nhất
-        logItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        logGroupElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         
         this.logCounter++;
     }
@@ -445,35 +459,13 @@ class SelectionSortVisualizer {
     clearLog(keepWelcome = true) {
         if (keepWelcome) {
             // Xóa tất cả trừ welcome message
-            const logs = this.logContainer.querySelectorAll('.log-item:not(.welcome)');
+            const logs = this.logContainer.querySelectorAll('.log-item:not(.welcome), .log-group');
             logs.forEach(log => log.remove());
         } else {
             // Xóa tất cả
             this.logContainer.innerHTML = '';
         }
         this.logCounter = 0;
-    }
-
-    /**
-     * Lấy icon tương ứng với loại bước
-     * @param {string} stepType - Loại bước
-     * @returns {string} Icon tương ứng
-     */
-    getStepIcon(stepType) {
-        const iconMap = {
-            'start': '🏁',
-            'outer_loop_start': '🔄',
-            'init_min': '🎯',
-            'compare_start': '👀',
-            'compare': '⚖️',
-            'update_min': '⬇️',
-            'swap_check': '🔍',
-            'swap': '🔄',
-            'no_swap': '⏭️',
-            'sorted': '✔️',
-            'complete': '🎉'
-        };
-        return iconMap[stepType] || '📝';
     }
 }
 
@@ -485,8 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const visualizer = new SelectionSortVisualizer();
     
     // Log thông tin về ứng dụng
-    console.log('🔢 Selection Sort Visualizer đã được khởi tạo!');
-    console.log('📧 Liên hệ: lequanganh253@gmail.com');
+    console.log('📢 Selection Sort Visualizer đã được khởi tạo!');
+    console.log('🔧 Liên hệ: lequanganh253@gmail.com');
     console.log('🌐 Website: https://lequanganh.id.vn');
     console.log('💻 GitHub: https://github.com/QuangAnh253');
 });
